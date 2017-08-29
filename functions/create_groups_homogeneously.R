@@ -34,13 +34,12 @@ create_groups_homogeneously <- function(data,
     # break() aus dem loop -> funktion bricht ab
     if (i > 1) {
       if (lapply(my_output_list, "[[", 2) %>% 
-          lapply(., "[[", 5) %>% 
-          lapply(., "[[", 2) %>% 
+          lapply(., "[[", 7) %>% 
+          lapply(., "[[", 1) %>% 
           unlist() %>% 
           max() > p_value_minimum) {
         message("p value > ", p_value_minimum, " identified :)")
         return(my_output_list)
-        # rm(my_output_list)
         break()
       }
     }
@@ -55,9 +54,9 @@ create_groups_homogeneously <- function(data,
     # sag AV mit group vorher, mach summary und gib coefficients wieder. speichere
     # den data.frame in i_list unter dem namen coefficients
     i_list[["coefficients"]] <- i_dat %>% 
-      lm(Infant.Mortality ~ group, data = .) %>% 
-      summary() %>% 
-      coefficients() %>% 
+      manova(cbind(Infant.Mortality, Education) ~ group, data = .) %>% 
+      summary.manova() %>% 
+      .$stats %>% 
       as.data.frame() %>% 
       rownames_to_column()
     
